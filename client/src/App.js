@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import SimpleStorageContract from "./contracts/SimpleStorage.json";
+// import SimpleStorageContract from "./contracts/SimpleStorage.json";
 import getWeb3 from "./getWeb3";
 
 import "./App.css";
@@ -17,15 +17,15 @@ class App extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = SimpleStorageContract.networks[networkId];
-      const instance = new web3.eth.Contract(
-        SimpleStorageContract.abi,
-        deployedNetwork && deployedNetwork.address,
-      );
+      // const deployedNetwork = SimpleStorageContract.networks[networkId];
+      // const instance = new web3.eth.Contract(
+      //   SimpleStorageContract.abi,
+      //   deployedNetwork && deployedNetwork.address,
+      // );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
+      // this.setState({ web3, accounts, contract: instance }, this.runExample);
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -34,6 +34,19 @@ class App extends Component {
       console.error(error);
     }
   };
+
+  // initWeb3 = function() {
+  //   if (typeof web3 !== 'undefined') {
+  //     // If a web3 instance is already provided by Meta Mask.
+  //     App.web3Provider = web3.currentProvider;
+  //     web3 = new Web3(web3.currentProvider);
+  //   } else {
+  //     // Specify default instance if no web3 instance provided
+  //     App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+  //     web3 = new Web3(App.web3Provider);
+  //   }
+  //   return App.initContract();
+  // }
 
   runExample = async () => {
     const { accounts, contract } = this.state;
@@ -49,12 +62,12 @@ class App extends Component {
   };
 
   render() {
-    if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
-    }
+    // if (!this.state.web3) {
+    //   return <div>Loading Web3, accounts, and contract...</div>;
+    // }
     return (
       <div className="App">
-        <h1>Good to Go!</h1>
+        {/* <h1>Good to Go!</h1>
         <p>Your Truffle Box is installed and ready.</p>
         <h2>Smart Contract Example</h2>
         <p>
@@ -64,7 +77,17 @@ class App extends Component {
         <p>
           Try changing the value stored on <strong>line 40</strong> of App.js.
         </p>
-        <div>The stored value is: {this.state.storageValue}</div>
+        <div>The stored value is: {this.state.storageValue}</div> */}
+
+        <form onSubmit="App.castVote(); return false;">
+        <div class="form-group">
+          <label for="candidatesSelect">Select Candidate</label>
+          <select class="form-control" id="candidatesSelect">
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Vote</button>
+        <hr />
+      </form>
       </div>
     );
   }
