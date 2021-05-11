@@ -3,6 +3,8 @@ import React, {
 } from "react";
 import Election from "./contracts/Election.json";
 import getWeb3 from "./getWeb3";
+import { spacing } from '@material-ui/system';
+import { Button, Container, Typography, TextField, Table , TableHead, TableRow, TableBody, TableCell, TableContainer, FormGroup   } from '@material-ui/core';
 
 import "./App.css";
 
@@ -93,32 +95,50 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <h3>Candidate count: {this.state.candidateCount}</h3>
+        <Typography variant="h3" component="h3">
+            Election Application
+        </Typography>
         
-        <table>
-          <thead>
-          <tr>
-          <th>Candidate names</th>
-          <th>Vote count</th>
-          </tr>
-          </thead>
+        <Container>
+          <TableContainer>
+          <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Candidate Id</TableCell>
+              <TableCell>Candidate names</TableCell>
+              <TableCell>Vote count</TableCell>
+            </TableRow>
+          </TableHead>
 
-          <tbody>
+          <TableBody>
             {  
-              this.state.candidates.map (c => 
-              <tr>
-                <td>{c.name}</td>
-                <td>{c.voteCount}</td>
-              </tr>)
+                this.state.candidates.map (c => 
+                <TableRow>
+                  <TableCell>{c.id}</TableCell>
+                  <TableCell>{c.name}</TableCell>
+                  <TableCell>{c.voteCount}</TableCell>
+                </TableRow>
+              )
             }
-          </tbody>
-        </table>
+          </TableBody>
+          </Table>
+          </TableContainer>
+        </Container>
 
-        <input value={this.state.yourvote} onChange={this.yourVoteEventHandler} />
-        <button onClick={this.doVote}>Vote</button>
+
+        <Container m="2em">
+
+        <Typography variant="h5" component="h5">
+            Vote Now
+        </Typography>
+         
+        <form noValidate autoComplete="off">
+          <FormGroup>
+          <TextField label="Candidate Id" variant="outlined" value={this.state.yourvote} onChange={this.yourVoteEventHandler} />
+          <Button onClick={this.doVote} color="primary" variant="contained" >Vote</Button>
+          </FormGroup>
+        </form>
+        </Container>
       </div>
     );
   }
