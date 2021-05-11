@@ -1,11 +1,27 @@
-import React, { Component } from "react";
-// import SimpleStorageContract from "./contracts/SimpleStorage.json";
+import React, {
+  Component
+} from "react";
+import Election from "./contracts/Election.json";
 import getWeb3 from "./getWeb3";
 
 import "./App.css";
 
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+  constructor (props) {
+    super (props);
+
+    this.state = {
+      storageValue: 0,
+      web3: null,
+      accounts: null,
+      contract: null,
+      candidateCount: 0,
+      candidates: []
+    };
+
+    this.doVote = this.doVote.bind (this);
+    this.yourVoteEventHandler = this.yourVoteEventHandler.bind (this);
+  }
 
   componentDidMount = async () => {
     try {
@@ -17,15 +33,19 @@ class App extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      // const deployedNetwork = SimpleStorageContract.networks[networkId];
-      // const instance = new web3.eth.Contract(
-      //   SimpleStorageContract.abi,
-      //   deployedNetwork && deployedNetwork.address,
-      // );
+
+      console.log(accounts);
+      console.log(networkId)
+
+      const deployedNetwork = Election.networks[networkId];
+      const instance = new web3.eth.Contract(
+        Election.abi,
+        deployedNetwork && deployedNetwork.address,
+      );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      // this.setState({ web3, accounts, contract: instance }, this.runExample);
+      this.setState({ web3, accounts, contract: instance }, this.loadCandidates);
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -35,59 +55,70 @@ class App extends Component {
     }
   };
 
-  // initWeb3 = function() {
-  //   if (typeof web3 !== 'undefined') {
-  //     // If a web3 instance is already provided by Meta Mask.
-  //     App.web3Provider = web3.currentProvider;
-  //     web3 = new Web3(web3.currentProvider);
-  //   } else {
-  //     // Specify default instance if no web3 instance provided
-  //     App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-  //     web3 = new Web3(App.web3Provider);
-  //   }
-  //   return App.initContract();
-  // }
+  doVote = async () => {
+    const {accounts, contract} = this.state;
+    var response = await contract.methods.vote(this.state.yourvote).send({ from: accounts[0] });
+    console.log (response)
+  }
 
-  runExample = async () => {
-    const { accounts, contract } = this.state;
+  yourVoteEventHandler = (e) => {
+    this.setState({
+      yourvote: e.target.value
+    })
+  }
 
-    // Stores a given value, 5 by default.
-     // await contract.methods.set(5).send({ from: accounts[0] });
+  loadCandidates = async () => {
+    const {accounts, contract} = this.state;
 
+    var candidateCount = await contract.methods.candidatesCount().call();
+    var candidates = []
+    for (var i = 1; i <= candidateCount; i++) {
+      var candidate = await contract.methods.candidates(i).call();
+      candidates.push (candidate)
+    }
+
+    this.setState({
+      candidateCount: candidateCount,
+      candidates: candidates
+    })
     // Get the value from the contract to prove it worked.
     // const response = await contract.methods.get().call();
-
     // Update state with the result.
     // this.setState({ storageValue: response });
   };
 
   render() {
-    // if (!this.state.web3) {
-    //   return <div>Loading Web3, accounts, and contract...</div>;
-    // }
+    if (!this.state.web3) {
+      return <div>Loading Web3, accounts, and contract...</div>;
+    }
     return (
       <div className="App">
-        {/* <h1>Good to Go!</h1>
+        <h1>Good to Go!</h1>
         <p>Your Truffle Box is installed and ready.</p>
         <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 40</strong> of App.js.
-        </p>
-        <div>The stored value is: {this.state.storageValue}</div> */}
+        <h3>Candidate count: {this.state.candidateCount}</h3>
+        
+        <table>
+          <thead>
+          <tr>
+          <th>Candidate names</th>
+          <th>Vote count</th>
+          </tr>
+          </thead>
 
-        <form onSubmit="App.castVote(); return false;">
-        <div class="form-group">
-          <label for="candidatesSelect">Select Candidate</label>
-          <select class="form-control" id="candidatesSelect">
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Vote</button>
-        <hr />
-      </form>
+          <tbody>
+            {  
+              this.state.candidates.map (c => 
+              <tr>
+                <td>{c.name}</td>
+                <td>{c.voteCount}</td>
+              </tr>)
+            }
+          </tbody>
+        </table>
+
+        <input value={this.state.yourvote} onChange={this.yourVoteEventHandler} />
+        <button onClick={this.doVote}>Vote</button>
       </div>
     );
   }
