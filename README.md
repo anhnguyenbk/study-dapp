@@ -4,7 +4,8 @@ Study DApp
 ## Installation
 1. Install Ganache (Local blockchain)
 2. Install MetaMask and connect to your local Ganache blockchain
-3. Config Truffle networks (truffle-config.js) to your Ganache blockchain 
+```https://www.youtube.com/watch?v=nUEBAS5r4Og```
+4. Config Truffle networks (truffle-config.js) to your Ganache blockchain 
 ```
 networks: {
     development: {
